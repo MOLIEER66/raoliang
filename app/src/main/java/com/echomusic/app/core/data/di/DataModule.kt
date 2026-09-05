@@ -5,13 +5,17 @@ import com.echomusic.app.core.data.db.AlbumDao
 import com.echomusic.app.core.data.db.EchoDatabase
 import com.echomusic.app.core.data.db.SongDao
 import com.echomusic.app.core.data.db.SyncMetaDao
+import com.echomusic.app.core.data.repository.LibraryRepository
+import com.echomusic.app.core.data.repository.LibraryRepositoryImpl
+import com.echomusic.app.core.data.sync.MediaStoreSource
+import com.echomusic.app.core.data.sync.MediaStoreSourceImpl
 import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
 
 /**
  * data 层 Koin module 表（ADR-0004 D6 回退落点 = Koin 4.1.1）。
  * D3：M2 拆 module 时本表随 core.data 包整体迁移。
- * 同步器 / Repository / 设置 / 取色相关绑定随 T3/T9 各任务增量注册于本文件。
+ * 设置 / 取色相关绑定随 T4/T9 各任务增量注册于本文件。
  */
 val dataModule = module {
     single<EchoDatabase> {
@@ -28,4 +32,15 @@ val dataModule = module {
     single<SongDao> { get<EchoDatabase>().songDao() }
     single<AlbumDao> { get<EchoDatabase>().albumDao() }
     single<SyncMetaDao> { get<EchoDatabase>().syncMetaDao() }
+
+    single<MediaStoreSource> { MediaStoreSourceImpl(androidContext()) }
+    single<LibraryRepository> {
+        LibraryRepositoryImpl(
+            db = get(),
+            songDao = get(),
+            albumDao = get(),
+            syncMetaDao = get(),
+            mediaStoreSource = get(),
+        )
+    }
 }

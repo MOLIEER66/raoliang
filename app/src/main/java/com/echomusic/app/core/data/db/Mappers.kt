@@ -9,9 +9,13 @@ import com.echomusic.app.core.model.ThemeMode
  * Entity ↔ 领域模型映射（core.model 零 Android 依赖，映射本身纯 JVM 可测）。
  */
 
+/** source 列 → 枚举（未知值兜底 LOCAL，防脏数据崩 UI） */
+fun songSourceFromKey(key: String): SongSource =
+    runCatching { SongSource.valueOf(key) }.getOrDefault(SongSource.LOCAL)
+
 fun SongEntity.toModel(): Song = Song(
     id = id,
-    source = runCatching { SongSource.valueOf(source) }.getOrDefault(SongSource.LOCAL),
+    source = songSourceFromKey(source),
     title = title,
     artist = artist,
     album = album,
