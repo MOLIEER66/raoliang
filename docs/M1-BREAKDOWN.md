@@ -58,7 +58,7 @@
 - ✅ 四态可用：未授权 / 扫描中（骨架 + 进度 + 计数增长）/ 空（回声波纹插画 + 「扫描本地音乐」主按钮）/ 正常
 - ✅ 返回键走 `OnBackPressedDispatcher` 系 API（targetSdk 36 预测性返回默认开启，旧 opt-out 已失效）
 
-### T5 · PlaybackService（1.5 天，依赖 T0，可与 T2-T4 并行）
+### T5 · PlaybackService（1.5 天，依赖 T0，可与 T2-T4 并行）—— ✅ 已完成（2026-09-05）
 
 产出：`core.playback.PlaybackService : MediaSessionService`。
 
@@ -66,15 +66,19 @@
 - ✅ `setHandleAudioBecomingNoisy(true)`：拔耳机自动暂停
 - ✅ 通知：默认 DefaultMediaNotificationProvider，MediaStyle，13+ 无通知权限时服务不死（内容仍可播，仅通知不显示）
 - ✅ `onTaskRemoved`：播放中保持、空闲时 `pauseAllPlayersAndStopSelf`
-- ✅ 进程内可播本地 uri（用临时测试入口验证，不等 UI）
+- ✅ 进程内可播本地 uri（mediaId→`Song.localUri` 的解析链路已就绪并单测覆盖；实际出声经真机验收 P0-4，UI 波次接 Controller 后即可验）
 
-### T6 · MediaController 桥 + 迷你播放条（1 天，依赖 T5）
+📌 **实测结论**：本地 assembleDebug + testDebugUnitTest + lint 全绿（0 errors）；Media3 1.11.0 API 实测与 1.0 教程不同——`onAddMediaItems` 已移入 `MediaSession.Callback`（service 不再有此方法）、`MediaMetadata.Builder.setArtworkUri` 仅余 `Uri` 重载（通知封面改在服务端解析时注入）、通知 Builder 通道名为 `setChannelName(int)`，均已按新签名落地；manifest 服务注册（`foregroundServiceType="mediaPlayback"` + 官方 intent-filter）确认进 merged manifest。
+
+### T6 · MediaController 桥 + 迷你播放条（1 天，依赖 T5）—— ✅ 桥层完成（2026-09-05；迷你条/播放页本体归 T7/T8 UI 波次）
 
 产出：UI↔session 解耦层。
 
-- ✅ `MediaController` 异步连接、断线重连；桥层输出 Compose State（当前曲/播放态/进度/队列位置）
-- ✅ 迷你条符合 DESIGN-SYSTEM §5.2：44 封面 r10、播放/暂停 40 圆形、下一首、顶部 2dp 进度线、无播放整条隐藏
-- ✅ 点击主体展开播放页（共享元素转场 M1 可先降级为普通导航，签名 morph 转场记入 M4 打磨，SCREENS §7）
+- ✅ `MediaController` 异步连接、断线重连（连接前命令缓存补发）；桥层输出 State（当前曲/播放态/进度/队列位置，StateFlow 供 Compose `collectAsStateWithLifecycle` 直订）
+- ⬜ 迷你条符合 DESIGN-SYSTEM §5.2：44 封面 r10、播放/暂停 40 圆形、下一首、顶部 2dp 进度线、无播放整条隐藏（→ T7 波次，数据面已备齐）
+- ⬜ 点击主体展开播放页（共享元素转场 M1 可先降级为普通导航，签名 morph 转场记入 M4 打磨，SCREENS §7）（→ T8 波次）
+
+📌 **实测结论**：`PlaybackController`（core.playback）+ `PlaybackControllerImpl` + `MediaControllerBridge` 落地，65 个 JVM 测试全绿——桥层命令映射与事件推导用 SessionHandle/SessionConnector 假体测（media3 真身隔离在 bridge 文件），播放模式三态映射（PlayModePolicy）与 DataStore 偏好存取（PlaybackPreferences）纯 JVM 可测；注：DataStore 文件读写测试在 Windows 桌面 JVM 因 .tmp rename 文件锁偶发失败，生产（Android/CI-linux）不受影响，故偏好测试只覆盖确定性映射逻辑。
 
 ### T7 · 音乐库屏（1.5 天，依赖 T4、T6）
 
