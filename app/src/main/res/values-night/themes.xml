@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 深色模式冷启动窗口主题：底色与 Compose EchoBackgroundDark 一致 -->
+<resources>
+    <style name="Theme.EchoMusic" parent="android:Theme.Material.NoActionBar">
+        <item name="android:windowBackground">@color/window_background</item>
+    </style>
+</resources>

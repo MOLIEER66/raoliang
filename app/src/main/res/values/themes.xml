@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Compose 应用不需要复杂 XML 主题：只负责 1) 去掉 ActionBar 2) 冷启动窗口底色。
+    系统栏（状态栏/导航栏）外观由 MainActivity 里的 enableEdgeToEdge() 动态接管。
+-->
+<resources>
+    <style name="Theme.EchoMusic" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:windowBackground">@color/window_background</item>
+    </style>
+</resources>

@@ -1,0 +1,38 @@
+# 回声音乐 EchoMusic · 忽略规则
+# 原则：机器相关的、可再生成的、涉及密钥的，一律不进库。
+
+# --- Gradle：构建缓存与产物（随时可再生）---
+.gradle/
+build/
+
+# --- 本机环境：SDK 路径因人而异，由 Android Studio 自动生成 ---
+local.properties
+
+# --- Android Studio / IntelliJ：个人 IDE 配置与索引 ---
+.idea/
+*.iml
+*.ipr
+*.iws
+captures/
+.externalNativeBuild/
+.cxx/
+
+# --- Kotlin / Compose 编译产物 ---
+.kotlin/
+
+# --- 安装包：只通过 CI Artifact 与 GitHub Release 分发，不进库 ---
+*.apk
+*.aab
+*.ap_
+*.idsig
+
+# --- 签名与密钥：泄露 = 任何人可冒充本项目发版，绝不提交 ---
+*.jks
+*.keystore
+keystore.properties
+
+# --- 系统杂项 ---
+.DS_Store
+Thumbs.db
+desktop.ini
+*.log

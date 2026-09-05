@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    自适应图标前景：声波三道 + 左右"回声"弧（108dp 画布，内容收在中心 66dp 安全区内）。
+    白色前景叠在 @color/ic_launcher_background（回声青）上。
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <!-- 中心主声波 -->
+    <path
+        android:pathData="M54,38 L54,70"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="6"
+        android:strokeLineCap="round" />
+
+    <!-- 左右短声波 -->
+    <path
+        android:pathData="M42,46 L42,62"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="6"
+        android:strokeLineCap="round" />
+    <path
+        android:pathData="M66,46 L66,62"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="6"
+        android:strokeLineCap="round" />
+
+    <!-- 外侧回声弧（左 "("、右 ")"） -->
+    <path
+        android:pathData="M33,45 A12,12 0 0 0 33,63"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="5"
+        android:strokeLineCap="round" />
+    <path
+        android:pathData="M75,45 A12,12 0 0 1 75,63"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="5"
+        android:strokeLineCap="round" />
+</vector>

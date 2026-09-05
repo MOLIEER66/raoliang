@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 回声音乐 EchoMusic · 文案资源 -->
+<resources>
+    <string name="app_name">回声音乐</string>
+    <string name="m0_status">M0 骨架已就位</string>
+    <string name="m0_placeholder">播放内核（Media3）与音源系统将在后续里程碑接入。</string>
+</resources>

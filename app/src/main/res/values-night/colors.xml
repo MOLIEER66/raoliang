@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 深色模式覆盖：仅替换窗口底色，配色主体由 Compose 动态/明暗主题接管 -->
+<resources>
+    <color name="window_background">#0F1412</color>
+</resources>

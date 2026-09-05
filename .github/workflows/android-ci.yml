@@ -1,0 +1,91 @@
+# 回声音乐 EchoMusic · Android CI
+#
+# 职责：
+#   1. push / pull_request：验证「能编译 + lint 干净」，上传可安装的 debug APK 供下载
+#   2. 打 v* tag：额外构建 release APK，并自动创建 GitHub Release 附上 APK
+#
+# 设计说明：
+#   - ubuntu-latest 自带 Android SDK（cmdline-tools / platforms / build-tools），无需手动安装
+#   - JDK 17 与工程 toolchain 一致（AGP 8.13 / Gradle 9.5 / Kotlin jvmTarget 17）
+#   - gradle/actions/setup-gradle 默认开启 ~/.gradle 缓存，依赖与 wrapper 不必每次重新下载
+#   - release 构建当前沿用 debug 签名（见 app/build.gradle.kts 的兜底配置），保证 tag 产出的
+#     APK 无需密码即可直接安装，群友开箱能装
+#
+# 后续接入正式签名时（TODO）：
+#   1) 仓库 Settings → Secrets and variables → Actions，添加：
+#        KEYSTORE_BASE64（keystore 文件 base64，Linux 下 `base64 -w0 release.keystore` 生成）
+#        KEYSTORE_PASSWORD / KEY_ALIAS / KEY_PASSWORD
+#   2) 在 "Build release APK" 之前新增一步，把密钥落盘：
+#        echo "$KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/release.keystore"
+#   3) 通过环境变量把签名注入 app/build.gradle.kts 的 release signingConfig
+#      （或用 -Pandroid.injected.signing.* 参数覆盖），同时删除工程里的 debug 签名兜底
+#   4) 清理：构建后删除密钥文件，避免驻留 runner
+
+name: Android CI
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  pull_request:
+
+# 创建 GitHub Release 需要写 contents 权限（PR/push 构建同样无害）
+permissions:
+  contents: write
+
+# 同一 ref 的新 push 会取消仍在跑的旧构建，省额度、出结果更快
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  build:
+    name: Build & Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17 (Temurin)
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Setup Gradle (dependency & wrapper caching)
+        uses: gradle/actions/setup-gradle@v4
+
+      # Windows 上首次提交可能丢失可执行位，兜底保证 CI 一定能跑（幂等）
+      - name: Ensure gradlew is executable
+        run: chmod +x gradlew
+
+      - name: Build debug APK & run Lint
+        run: ./gradlew assembleDebug lint --stacktrace
+
+      - name: Upload debug APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: EchoMusic-debug-apk
+          path: app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
+
+      # ---------- 以下步骤仅在打 v* tag 时执行 ----------
+
+      - name: Build release APK (tag only)
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: ./gradlew assembleRelease --stacktrace
+
+      - name: Upload release APK (tag only)
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: actions/upload-artifact@v4
+        with:
+          name: EchoMusic-release-apk
+          path: app/build/outputs/apk/release/*.apk
+          if-no-files-found: error
+
+      - name: Create GitHub Release with APK (tag only)
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: app/build/outputs/apk/release/*.apk
+          generate_release_notes: true
