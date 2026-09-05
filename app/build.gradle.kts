@@ -47,6 +47,11 @@ kotlin {
     }
 }
 
+// Room3 schema 导出（BREAKDOWN T2：schemas 目录进版本库，演进走 migration）
+ksp {
+    arg("room.schemaLocation", "$projectDir/schemas")
+}
+
 dependencies {
     // Compose：版本全部由 BOM 仲裁，这里不写版本号
     implementation(platform(libs.androidx.compose.bom))

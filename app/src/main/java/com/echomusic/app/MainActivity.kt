@@ -14,60 +14,38 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.lifecycleScope
 import coil3.compose.AsyncImage
-import com.echomusic.app.core.data.db.SongDao
-import com.echomusic.app.core.data.db.SongEntity
 import com.echomusic.app.ui.theme.EchoMusicTheme
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.launch
-import org.koin.android.ext.android.inject
 
 /**
  * M0 空壳入口：显示应用名、版本号、里程碑状态和占位文案。
- * 播放能力（M1）与音源系统（M2）后续接入。
+ * 音乐库 UI（SCREENS §1）在 M1 UI 波次落地。
  *
- * T0 门禁冒烟（ADR-0004 D4/D5/D6）：
- *  - Koin `by inject()`：DI 解析链实测（D6 回退落点）；
- *  - songDao insert→query 一轮：Room3 运行时实测，结果写进状态行；
- *  - AsyncImage：Coil 3 渲染管线实测（本地资源，免网络）。
- * 以上冒烟代码随 T2/T4 数据层落地时移除。
+ * T0 门禁的数据库冒烟已随 T2 正式数据层移除（id=1 幂等写入与状态行依赖的 DAO 回路）；
+ * Koin 解析链改由 EchoApplication 装配的真实依赖承载，Coil AsyncImage 冒烟保留至 UI 波次。
  */
 class MainActivity : ComponentActivity() {
-
-    private val songDao: SongDao by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         // Edge-to-edge：内容延伸进状态栏/导航栏（Android 15+ 强制，PRD §7）
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
 
-        // 冒烟：走真库 insert→query 一轮（id 固定 1，REPLACE 幂等）
-        var smokeStatus by mutableStateOf("DI ⏳ Room ⏳")
-        lifecycleScope.launch {
-            songDao.insertAll(listOf(SongEntity(id = 1, title = "T0 冒烟曲目")))
-            val loaded = songDao.observeAll().first()
-            smokeStatus = "DI ✓ Room ✓（${loaded.size} 行）"
-        }
-
         setContent {
             EchoMusicTheme {
-                EchoHome(smokeStatus = smokeStatus)
+                EchoHome()
             }
         }
     }
 }
 
 @Composable
-fun EchoHome(smokeStatus: String) {
+fun EchoHome() {
     Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
         Column(
             modifier = Modifier
@@ -84,13 +62,6 @@ fun EchoHome(smokeStatus: String) {
             Spacer(modifier = Modifier.height(8.dp))
             Text(
                 text = "v" + BuildConfig.VERSION_NAME,
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.primary,
-            )
-            // T0 门禁状态行：Hilt 注入 + Room3 读写回路的结果
-            Spacer(modifier = Modifier.height(12.dp))
-            Text(
-                text = smokeStatus,
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.primary,
             )
@@ -120,6 +91,6 @@ fun EchoHome(smokeStatus: String) {
 @Composable
 fun EchoHomePreview() {
     EchoMusicTheme {
-        EchoHome(smokeStatus = "DI ✓ Room ✓（预览）")
+        EchoHome()
     }
 }
