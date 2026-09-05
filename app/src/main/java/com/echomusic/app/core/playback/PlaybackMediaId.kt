@@ -39,4 +39,10 @@ object PlaybackMediaId {
         }
         return Decoded(source, songId)
     }
+
+    /**
+     * 通知栏/锁屏展示用封面 URI：MediaStore 专辑封面（服务端经 `Uri.parse` 注入 MediaMetadata）。
+     * UI 内的封面显示走 Coil AlbumArtFetcher 读内嵌封面（ADR-0004 D5），与通知互不影响。
+     */
+    fun albumArtworkUri(albumId: Long): String = "content://media/external/audio/albumart/$albumId"
 }

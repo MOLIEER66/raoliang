@@ -130,7 +130,7 @@ class PlaybackService : MediaSessionService() {
                 .setMediaMetadata(
                     // 控制端已带文字元数据；通知封面在此补（MediaStore 专辑封面 URI）
                     item.mediaMetadata.buildUpon()
-                        .setArtworkUri(QueueMediaItemFactory.artworkUriOf(song.albumId).toUri())
+                        .setArtworkUri(PlaybackMediaId.albumArtworkUri(song.albumId).toUri())
                         .build(),
                 )
                 .build()

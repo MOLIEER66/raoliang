@@ -22,7 +22,7 @@ class QueueMediaItemFactoryTest {
         assertEquals("歌手7", item.mediaMetadata.artist)
         assertEquals("专辑7", item.mediaMetadata.albumTitle)
         // 通知栏封面 URI 由服务端按此 helper 注入（artworkUri 为 Uri 类型，属 Android 侧）
-        assertEquals("content://media/external/audio/albumart/7", QueueMediaItemFactory.artworkUriOf(7L))
+        assertEquals("content://media/external/audio/albumart/7", PlaybackMediaId.albumArtworkUri(7L))
         // 关键契约：入队 item 不带播放 URI，解析权在 PlaybackService 的 session callback
         assertEquals(null, item.localConfiguration)
     }
