@@ -26,4 +26,12 @@
     <string name="tab_recent">最近播放</string>
     <string name="tab_most">最常播放</string>
     <string name="shuffle_all">随机播放全部</string>
+
+    <!-- 占位屏（BREAKDOWN §0：底部导航 4 项可见，三屏显示空态） -->
+    <string name="placeholder_search_title">搜索即将上线</string>
+    <string name="placeholder_search_body">M2 接入洛雪音源后，可搜索本地曲库与在线曲库</string>
+    <string name="placeholder_playlist_title">歌单即将上线</string>
+    <string name="placeholder_playlist_body">M3 上线本地歌单管理，现在先把喜欢的歌听起来</string>
+    <string name="placeholder_settings_title">设置即将上线</string>
+    <string name="placeholder_settings_body">当前版本 %1$s；外观、音源与播放设置随后续里程碑开放</string>
 </resources>

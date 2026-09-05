@@ -21,7 +21,11 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             EchoTheme {
-                LibraryScreen()
+                EchoAppRoot(
+                    playerOpen = false,
+                    onOpenPlayer = {},
+                    onClosePlayer = {},
+                )
             }
         }
     }

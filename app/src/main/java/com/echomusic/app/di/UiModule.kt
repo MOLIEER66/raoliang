@@ -1,6 +1,7 @@
 package com.echomusic.app.di
 
 import com.echomusic.app.feature.library.LibraryViewModel
+import com.echomusic.app.feature.player.PlayerViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
@@ -10,4 +11,5 @@ import org.koin.dsl.module
  */
 val uiModule = module {
     viewModel { LibraryViewModel(get(), get()) }
+    viewModel { PlayerViewModel(get(), get()) }
 }
