@@ -20,7 +20,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
-import com.echomusic.app.ui.theme.EchoMusicTheme
+import com.echomusic.app.ui.theme.EchoTheme
 
 /**
  * M0 空壳入口：显示应用名、版本号、里程碑状态和占位文案。
@@ -37,7 +37,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
-            EchoMusicTheme {
+            EchoTheme {
                 EchoHome()
             }
         }
@@ -90,7 +90,7 @@ fun EchoHome() {
 @Preview(showBackground = true, name = "M0 主页")
 @Composable
 fun EchoHomePreview() {
-    EchoMusicTheme {
+    EchoTheme {
         EchoHome()
     }
 }
