@@ -8,6 +8,7 @@ import com.echomusic.app.core.designsystem.di.designSystemModule
 import com.echomusic.app.core.designsystem.palette.AlbumArtFetcher
 import com.echomusic.app.core.designsystem.palette.AlbumCoverRef
 import com.echomusic.app.core.playback.di.playbackModule
+import com.echomusic.app.di.uiModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
 
@@ -31,7 +32,7 @@ class EchoApplication : Application() {
         }
         startKoin {
             androidContext(this@EchoApplication)
-            modules(dataModule, playbackModule, designSystemModule)
+            modules(dataModule, playbackModule, designSystemModule, uiModule)
         }
     }
 }

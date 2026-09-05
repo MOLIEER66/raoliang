@@ -2,9 +2,28 @@
 <!-- 绕梁 Raoliang · 文案资源 -->
 <resources>
     <string name="app_name">绕梁</string>
-    <string name="m0_status">M0 骨架已就位</string>
-    <string name="m0_placeholder">播放内核（Media3）与音源系统将在后续里程碑接入。</string>
 
     <!-- T5：媒体通知通道（DefaultMediaNotificationProvider 的通道名，系统通知设置里展示） -->
     <string name="media_notification_channel_name">正在播放</string>
+
+    <!-- T4：库页四态（SCREENS §1 文案逐字对应） -->
+    <string name="library_title">音乐库</string>
+    <string name="permission_title">需要读取本地音乐权限</string>
+    <string name="permission_body">权限仅用于扫描音乐文件，不会上传</string>
+    <string name="permission_grant">去授权</string>
+    <string name="permission_open_settings">去系统设置</string>
+    <string name="scanning_query">正在扫描媒体库…</string>
+    <string name="scanning_progress">已入库 %1$d / %2$d 首</string>
+    <string name="empty_title">还没有歌曲</string>
+    <string name="empty_body">扫描手机里的本地音乐，或导入音源在线听</string>
+    <string name="empty_scan">扫描本地音乐</string>
+    <string name="scan_failed_title">扫描失败</string>
+    <string name="scan_failed_body">错误详情：%1$s</string>
+    <string name="retry">重试</string>
+
+    <!-- T7：标签页与操作行 -->
+    <string name="tab_all">全部歌曲</string>
+    <string name="tab_recent">最近播放</string>
+    <string name="tab_most">最常播放</string>
+    <string name="shuffle_all">随机播放全部</string>
 </resources>
