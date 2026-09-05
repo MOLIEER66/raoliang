@@ -15,14 +15,15 @@
 
 预估含自测。✅ 行为验收标准，全部可勾选。
 
-### T0 · 门禁 spike：版本矩阵验证（0.5 天，卡后续一切）
+### T0 · 门禁 spike：版本矩阵验证（0.5 天，卡后续一切）—— ✅ 已完成（2026-09-05）
 
-产出：`gradle/libs.versions.toml` 增补 hilt 2.60.1 / ksp / room3 3.0.2 / datastore 1.2.1 / coil 3.6.2 / materialkolor 5.0.1，最小代码接通 `@HiltAndroidApp` + 一个 Room3 DAO + 一个 Coil `AsyncImage`。
+产出：`gradle/libs.versions.toml` 增补 ksp 2.3.10 / koin 4.1.1 / room3 3.0.2 / datastore 1.2.1 / coil 3.5.0 / materialkolor 4.1.1 / lifecycle 2.10.0 / sqlite-bundled 2.7.0 / junit 4.13.2，最小代码接通 Koin Application + 一个 Room3 DAO（内存库 JVM 单测）+ 一个 Coil `AsyncImage`。
 
-- ✅ `compileDebugKotlin`（含 KSP 双处理器：Room3 + Hilt）在 Kotlin 2.4.10 下零错误通过
-- ✅ Coil 3.6.2 + coil-network-okhttp 依赖解析通过；Room3 注解生成物在 IDE 可跳转
+- ✅ `compileDebugKotlin`（KSP 处理器：Room3）在 Kotlin 2.4.10 下零错误通过（原验收的「Room3 + Hilt 双处理器」被门禁改写：Hilt 插件在应用阶段即被 AGP 版本检查拦截，见结论）
+- ✅ Coil + coil-network-okhttp 依赖解析通过（3.5.0）；Room3 注解生成物在 IDE 可跳转
 - ✅ 顺手：把 toml 注释里的 Media3 发布日期修正为官方页的 2026-08-05（现写 07-29，见 ADR-0004 §2 R5）
 - 🔀 降级开关：KSP/Hilt 编译失败 → 当天评审切 Koin 4.1.1（ADR-0004 D6），Room3 失败 → 回退 androidx.room 2.8.4（ADR-0004 D4）
+- 📌 **实测结论**：Hilt 门禁失败（2.59+ Gradle 插件强制 AGP ≥ 9.0.0，与锁定的 AGP 8.13.2 冲突，实测报错；回退 Hilt ≤ 2.58 又无法安全消费 Kotlin 2.4.10 元数据），按 D6 既定回退线落 **Koin 4.1.1**，Kotlin 2.4.10 × KSP 2.3.10 × Room3 3.0.2 全链绿。Coil 3.6.x 传递 compose 1.12.0（AAR 实测 minCompileSdk=37/minAGP=9.1）→ 回退 **3.5.0**；materialkolor 5.x（AAR 实测 minCompileSdk=37）→ 回退 **4.1.1**；lifecycle 锁 **2.10.0**（2.11.0 需 compileSdk 37）。以上版本均待 compileSdk 37 + AGP 9.2+ 升级时同批回升。本地 `assembleDebug` + `testDebugUnitTest`（Room3 内存库 + BundledSQLiteDriver，2/2 绿）+ `lint` 全绿；CI 于同一提交触发。
 
 ### T1 · 权限与清单（0.5 天，依赖 T0）
 

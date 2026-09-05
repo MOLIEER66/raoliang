@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.ksp)
 }
 
 android {
@@ -58,6 +59,34 @@ dependencies {
     implementation(libs.androidx.media3.exoplayer)
     implementation(libs.androidx.media3.session)
 
+    // Lifecycle（2.10.0：最后一个兼容 compileSdk 36 的稳定版，2.11.0 要求 compileSdk 37）
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
+    implementation(libs.androidx.lifecycle.runtime.compose)
+    implementation(libs.androidx.lifecycle.runtime.ktx)
+
+    // Koin（ADR-0004 D6 回退落点，门禁结论见 toml 注释）
+    implementation(libs.koin.android)
+    implementation(libs.koin.androidx.compose)
+
+    // Room3（ADR-0004 D4）：新包 androidx.room3，KSP 生成 DAO 实现
+    implementation(libs.androidx.room3.runtime)
+    ksp(libs.androidx.room3.compiler)
+
+    // Preferences DataStore（ADR-0004 D4：设置键值存储，T4 接入）
+    implementation(libs.androidx.datastore.preferences)
+
+    // Coil（ADR-0004 D5）：封面加载；3.5.0 回退说明见 toml 注释
+    implementation(libs.coil.compose)
+    implementation(libs.coil.network.okhttp)
+
+    // MaterialKolor HCT 数学库（ADR-0004 D5 / T9 取色器）
+    implementation(libs.materialkolor.color.utilities)
+
     // 仅调试包需要：IDE 预览渲染
     debugImplementation(libs.androidx.compose.ui.tooling)
+
+    // JVM 单测：Room3 内存库 + 内置 SQLite 驱动（免模拟器跑 DAO 用例，BREAKDOWN §3.1）
+    testImplementation(libs.junit)
+    testImplementation(libs.androidx.room3.runtime)
+    testImplementation(libs.androidx.sqlite.bundled.jvm)
 }
