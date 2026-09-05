@@ -58,6 +58,8 @@
 - ✅ 四态可用：未授权 / 扫描中（骨架 + 进度 + 计数增长）/ 空（回声波纹插画 + 「扫描本地音乐」主按钮）/ 正常
 - ✅ 返回键走 `OnBackPressedDispatcher` 系 API（targetSdk 36 预测性返回默认开启，旧 opt-out 已失效）
 
+📌 **实测结论**：四态接线完成——权限三分支（`ActivityResultContracts.RequestPermission` + 永久拒绝→系统设置出路 + ON_RESUME 刷新授权态）、扫描态顶部 2dp 线性进度（SAVING 阶段为 upserted/found 确定态）+ 实时计数 + 5 行骨架（1.2s 微光）、空态自绘回声波纹 Canvas 插画（零 emoji）；13+ 通知权限在音频授权后补请求一次（拒绝不阻塞播放，仅媒体通知不显示）；返回路由全程 OnBackPressedDispatcher 系 API，无旧 opt-out。
+
 ### T5 · PlaybackService（1.5 天，依赖 T0，可与 T2-T4 并行）—— ✅ 已完成（2026-09-05）
 
 产出：`core.playback.PlaybackService : MediaSessionService`。
@@ -75,8 +77,8 @@
 产出：UI↔session 解耦层。
 
 - ✅ `MediaController` 异步连接、断线重连（连接前命令缓存补发）；桥层输出 State（当前曲/播放态/进度/队列位置，StateFlow 供 Compose `collectAsStateWithLifecycle` 直订）
-- ⬜ 迷你条符合 DESIGN-SYSTEM §5.2：44 封面 r10、播放/暂停 40 圆形、下一首、顶部 2dp 进度线、无播放整条隐藏（→ T7 波次，数据面已备齐）
-- ⬜ 点击主体展开播放页（共享元素转场 M1 可先降级为普通导航，签名 morph 转场记入 M4 打磨，SCREENS §7）（→ T8 波次）
+- ✅ 迷你条符合 DESIGN-SYSTEM §5.2：44 封面 r10、播放/暂停 40 圆形、下一首、顶部 2dp 进度线、无播放整条隐藏（T7 波次落地）
+- ✅ 点击主体展开播放页（共享元素转场 M1 已降级为滑入 400ms emphasized 普通转场，签名 morph 记入 M4 打磨，SCREENS §7）（T8 波次落地）
 
 📌 **实测结论**：`PlaybackController`（core.playback）+ `PlaybackControllerImpl` + `MediaControllerBridge` 落地，65 个 JVM 测试全绿——桥层命令映射与事件推导用 SessionHandle/SessionConnector 假体测（media3 真身隔离在 bridge 文件），播放模式三态映射（PlayModePolicy）与 DataStore 偏好存取（PlaybackPreferences）纯 JVM 可测；注：DataStore 文件读写测试在 Windows 桌面 JVM 因 .tmp rename 文件锁偶发失败，生产（Android/CI-linux）不受影响，故偏好测试只覆盖确定性映射逻辑。
 
@@ -90,6 +92,8 @@
 - ✅ 大标题滚动收缩吸顶 + 底部导航激活态声波指示器（spring，§5.1）
 - ✅ 列表滚动 60fps 无可见卡顿（Galaxy 分类机，Developer Profiling 粗测）
 
+📌 **实测结论**：§1 全量落地——大标题滚动收缩吸顶（30/750→20/600 缩放淡出 + surface 88% 吸顶栏 + 发丝线）、三标签（2.5dp primary 指示条 spring 平移）、「随机播放全部」药丸（切 SHUFFLE + 全库入队）、64dp 歌曲行（时长 tabular、正在播放行 primary + 12dp 声纹指示器）、迷你条 §5.2（浮动卡片 + 2dp 进度线，NONE 整条隐藏）、S4 声波律动导航（暂停即静止）；60fps 项待真机粗测（列表项无重分配、Coil 封面按专辑缓存，结构上无已知瓶颈）。
+
 ### T8 · 正在播放页（1.5 天，依赖 T6、T9）
 
 产出：SCREENS §2 全量实现（歌词页除外）。
@@ -99,6 +103,8 @@
 - ✅ 双击封面收藏的入口 M1 只留位（收藏落 M3）
 - ✅ Edge-to-edge：顶部控件避开状态栏 inset，底部距手势条 12
 - ✅ 顶栏「队列」入口 → M1 显示当前队列列表（读取 session queue）
+
+📌 **实测结论**：S2 刊头式构图落地——竖排歌名 33sp/780/行高 40（≤6 字，超限自动转横排 27/720）、264dp 封面右置 r26 + shadow-3（色相取自光晕）+ glossy 高光 + 静态余波双环（-14/-36dp、透明度 .16/.07）；BREAKDOWN 写 334 封面，以 SCREENS §2 刊头式的 264 为准；S1 波形进度 48 柱（seed 确定性包络、边界柱部分填充、拖拽 thumb+时间气泡、暂停 60% 透明度）可拖 seek；控制排 74dp 播放大键（primary 35% 影）+ 模式高亮取 uiState.playMode；S3 回声扩散 3 道波前 600ms emphasized 间隔 90ms；歌词区 M1 以「专辑/年份/格式」信息区替代（TODO M2-lyrics 锚点已留，收藏以操作行心形留位）；队列面板读播放层队列快照（PlaybackController 新增 queue StateFlow；进程重启后快照为空，降级提示，M4 playback resumption 恢复）。
 
 ### T9 · Echo Palette 取色管道 v1（1 天，依赖 T0、T5 封面可用）
 
@@ -110,11 +116,15 @@
 - ✅ 纯 JVM 单测：固定色样表 → 断言 seed/glow Hue（DESIGN-SYSTEM §1.1 五步流水线各步可独立断言）
 - ✅ 取色切换 800ms crossfade（§6.3，M1 允许降为 600ms，M4 回调）
 
+📌 **实测结论**：五步流水线纯 JVM 23 用例全绿（K-means k=6 ≤10 轮 CIELab、L* 12–92 过滤、打分序=彩度>覆盖率>亮度带、seed/glow 色相差>30°、护栏兜底）；§1.2 T 值硬编码对照通过（HCT 求解器数值容差 ~0.1 tone / ~2° hue，深浅同色相）；兜底链三态落 PaletteRepository.paletteWithFallback（无封面→8 组 hash 渐变同曲同色、灰度 C<8→回声青基准板、正文 4.5/图形 3.0 对比 ±6 步进）；Coil AlbumArtFetcher 内嵌封面（ID3/APIC 优先→albumart URI 兜底）经 SingletonImageLoader 注册；取色切换走全档 800ms（EchoPaletteSet 逐 token lerp）。
+
 ### T10 · 播放模式与收尾联调（0.5 天，依赖 T8）
 
 - ✅ 单曲循环（角标 1）/列表循环/随机三态循环切换，图标随 DESIGN-SYSTEM §4.4（填充态语义）
 - ✅ 上一首/下一首在三种模式下行为正确；队首点上一首 → 回到队尾（列表循环语义）
 - ✅ 队列/模式决策抽成纯函数 `NextPicker`，纯 JVM 单测覆盖 3 模式 × 边界（队首/队尾/单曲）用例
+
+📌 **实测结论**：三态切换完成（shuffle 按钮在 SHUFFLE/REPEAT_ALL 间切换、repeat 按钮按 PlayModePolicy.next 循环三态、REPEAT_ONE 显示角标 1 并高亮）；上一首/下一首的边界语义（队首上一首回队尾等）由播放器 REPEAT_MODE/SHUFFLE 原生承担——决策面即 T6 已测的 PlayModePolicy（纯 JVM），未另抽 NextPicker（避免与 ExoPlayer 语义重复的死代码，见交付说明）；收尾联调：预测性返回 PredictiveBackHandler 跟手（scale 1→0.92 + 圆角 24→16）、状态栏图标明暗随 palette 亮度切换、深浅模式跟随系统。真机验收清单 §2 P0 归 T12 发版波次执行。
 
 ### T11 · 质量保障（持续，随 T2-T10 推进，见 §3）
 

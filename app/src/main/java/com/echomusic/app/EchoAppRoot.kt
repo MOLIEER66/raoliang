@@ -1,6 +1,6 @@
 package com.echomusic.app
 
-import androidx.activity.compose.BackHandler
+import androidx.activity.compose.PredictiveBackHandler
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateDpAsState
@@ -16,12 +16,15 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -29,12 +32,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.lerp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import kotlinx.coroutines.CancellationException
 import com.echomusic.app.core.designsystem.components.EchoBottomNav
 import com.echomusic.app.core.designsystem.components.MiniPlayerBar
 import com.echomusic.app.core.designsystem.components.NavItem
 import com.echomusic.app.core.designsystem.components.rememberBottomNavHeight
 import com.echomusic.app.core.designsystem.icon.EchoIcons
+import com.echomusic.app.core.designsystem.palette.isLightBackground
 import com.echomusic.app.core.designsystem.theme.EchoMotion
 import com.echomusic.app.core.designsystem.theme.EchoSpacing
 import com.echomusic.app.core.playback.PlaybackStatus
@@ -60,6 +66,8 @@ fun EchoAppRoot(playerViewModel: PlayerViewModel = koinViewModel()) {
     var playerOpen by rememberSaveable { mutableStateOf(false) }
 
     LaunchedEffect(Unit) { playerViewModel.connect() }
+    // 状态栏图标明暗随当前 palette 背景亮度切换（DESIGN-SYSTEM §7）
+    SystemBarAppearance()
 
     val navHeight = rememberBottomNavHeight()
     // 迷你条/导航的chrome层：播放页打开时下沉 24dp + 淡出 250ms（§6.3a）
@@ -75,8 +83,19 @@ fun EchoAppRoot(playerViewModel: PlayerViewModel = koinViewModel()) {
     )
     val density = LocalDensity.current
 
-    // 播放页打开时拦截返回（T10 升级为预测性返回跟手缩放）
-    BackHandler(enabled = playerOpen) { playerOpen = false }
+    // 预测性返回跟手（§6.3a：缩放 0.92 + 圆角 24→16 预览；targetSdk 36 默认开启）。
+    // 手势提交 → 收起播放页；手势取消 → 回弹（backProgress 归零）。
+    var backProgress by remember { mutableFloatStateOf(0f) }
+    PredictiveBackHandler(enabled = playerOpen) { progress ->
+        try {
+            progress.collect { event -> backProgress = event.progress }
+            playerOpen = false
+        } catch (_: CancellationException) {
+            // 手势取消：跟随态归零，播放页回弹
+        } finally {
+            backProgress = 0f
+        }
+    }
 
     Box(
         Modifier
@@ -141,7 +160,8 @@ fun EchoAppRoot(playerViewModel: PlayerViewModel = koinViewModel()) {
                 },
         )
 
-        // 正在播放页：滑入 400ms emphasized + 淡入（§6.3a）
+        // 正在播放页：滑入 400ms emphasized + 淡入（§6.3a）；
+        // 预测性返回跟手：scale 1→0.92 + 圆角 24→16（§6.3a 预览口径）
         AnimatedVisibility(
             visible = playerOpen,
             enter = slideInVertically(
@@ -152,7 +172,43 @@ fun EchoAppRoot(playerViewModel: PlayerViewModel = koinViewModel()) {
             ) { it } + fadeOut(tween(EchoMotion.BASE_MS)),
             modifier = Modifier.fillMaxSize(),
         ) {
-            NowPlayingScreen(onCollapse = { playerOpen = false })
+            Box(
+                Modifier
+                    .fillMaxSize()
+                    .graphicsLayer {
+                        scaleX = 1f - 0.08f * backProgress
+                        scaleY = 1f - 0.08f * backProgress
+                        shape = RoundedCornerShape(lerp(24.dp, 16.dp, backProgress))
+                        clip = true
+                    },
+            ) {
+                NowPlayingScreen(onCollapse = { playerOpen = false })
+            }
         }
     }
+}
+
+
+/**
+ * 状态栏图标明暗随 palette 亮度切换（DESIGN-SYSTEM §7）：深色背景 → 浅色图标，
+ * 浅色背景 → 深色图标。enableEdgeToEdge 的默认行为按系统主题，这里按「界面实际背景」覆盖。
+ */
+@Composable
+private fun SystemBarAppearance() {
+    val view = androidx.compose.ui.platform.LocalView.current
+    val palette = com.echomusic.app.core.designsystem.palette.LocalEchoPalette.current
+    val lightIcons = !palette.set.isLightBackground()
+    if (!view.isInEditMode) {
+        androidx.compose.runtime.SideEffect {
+            val window = view.context.findActivity()?.window ?: return@SideEffect
+            androidx.core.view.WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = !lightIcons
+        }
+    }
+}
+
+/** 沿 ContextWrapper 链找宿主 Activity（setContent 的 view context 可能是主题包装） */
+private tailrec fun android.content.Context.findActivity(): android.app.Activity? = when (this) {
+    is android.app.Activity -> this
+    is android.content.ContextWrapper -> baseContext.findActivity()
+    else -> null
 }

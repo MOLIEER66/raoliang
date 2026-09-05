@@ -135,10 +135,10 @@ fun LibraryScreen(
                 tabs = LibraryTab.entries.map { stringResource(it.labelRes) },
                 selectedTab = selectedTab.ordinal,
                 onTabSelect = { selectedTab = LibraryTab.entries[it] },
-                songs = songs,
+                songsFor = { tabIndex -> songsForTab(viewModel, tabIndex) },
                 currentMediaId = playbackUi.currentMediaId,
                 isPlaying = playbackUi.status == PlaybackStatus.PLAYING,
-                onSongClick = { index -> viewModel.play(songs, index) },
+                onSongClick = { tabIndex, songIndex -> viewModel.play(songsForTab(viewModel, tabIndex), songIndex) },
                 onShuffleAll = { viewModel.playAllShuffled(viewModel.allSongs.value) },
                 extraBottomPadding = extraBottomPadding,
             )
@@ -176,9 +176,16 @@ private fun LibraryHeader(stats: LibraryStats) {
     }
 }
 
+/** 按标签页取当前列表快照（AnimatedContent 内容选择 + 点播入队共用） */
+private fun songsForTab(viewModel: LibraryViewModel, tabIndex: Int): List<Song> =
+    when (LibraryTab.entries[tabIndex]) {
+        LibraryTab.ALL -> viewModel.allSongs.value
+        LibraryTab.RECENT -> viewModel.recentSongs.value
+        LibraryTab.MOST -> viewModel.mostSongs.value
+    }
+
 /** 统计行「1,247 首 · 本地 1,240 · 洛雪 7」（洛雪段 M1 恒为 0，不显示） */
-internal fun statsLine(stats: LibraryStats): String {
-    val format = NumberFormat.getIntegerInstance(Locale.CHINA)
+internal fun statsLine(stats: LibraryStats): String {    val format = NumberFormat.getIntegerInstance(Locale.CHINA)
     return buildString {
         append(format.format(stats.total)).append(" 首 · 本地 ").append(format.format(stats.localCount))
         if (stats.onlineCount > 0) {
@@ -190,6 +197,7 @@ internal fun statsLine(stats: LibraryStats): String {
 /**
  * 正常态（SCREENS §1 全量）：大标题滚动收缩为吸顶小标题（缩放+淡出）、统计行与
  * 「随机播放全部」随收缩淡出、标签页吸附其下（吸顶栏背景 surface 88% + 发丝线）。
+ * [songsFor] 按标签页取列表（AnimatedContent 的 content lambda 必须按 targetState 选内容）。
  */
 @Composable
 private fun NormalLibrary(
@@ -197,10 +205,10 @@ private fun NormalLibrary(
     tabs: List<String>,
     selectedTab: Int,
     onTabSelect: (Int) -> Unit,
-    songs: List<Song>,
+    songsFor: (Int) -> List<Song>,
     currentMediaId: String?,
     isPlaying: Boolean,
-    onSongClick: (Int) -> Unit,
+    onSongClick: (tabIndex: Int, songIndex: Int) -> Unit,
     onShuffleAll: () -> Unit,
     extraBottomPadding: Dp,
 ) {
@@ -232,7 +240,8 @@ private fun NormalLibrary(
             },
             modifier = Modifier.fillMaxSize(),
             label = "tabContent",
-        ) { _ ->
+        ) { tab ->
+            val songs = songsFor(tab)
             LazyColumn(
                 state = listState,
                 modifier = Modifier.fillMaxSize(),
@@ -244,7 +253,7 @@ private fun NormalLibrary(
                 itemsIndexed(songs, key = { _, song -> song.id }) { index, song ->
                     SongListRow(
                         song = song,
-                        onClick = { onSongClick(index) },
+                        onClick = { onSongClick(tab, index) },
                         isCurrent = PlaybackMediaId.of(song) == currentMediaId,
                         isPlaying = isPlaying,
                     )
