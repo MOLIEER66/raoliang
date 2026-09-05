@@ -2,16 +2,24 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <!--
-        M1 预留（PRD §7 Android 16 适配清单，M0 不声明、不加功能）：
-        1. 前台服务媒体播放（Android 14+ 要求前台服务必须声明类型）：
-           <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-           <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
-           且 <service android:foregroundServiceType="mediaPlayback" ... />
-        2. 通知权限（Android 13+）：
-           <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
-        3. 本地音频读取（Android 13+ 细分媒体权限）：
-           <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
+        T1 权限与清单（M1-BREAKDOWN T1 / ADR-0004 D2、D1）。
+        本波次（数据层）只声明权限；PlaybackService 的 <service> 注册随 T5（播放引擎波次）添加，
+        避免指向尚不存在的类。
     -->
+
+    <!-- 本地音频读取：Android 13+ 细分媒体权限；音频无"部分访问"态，权限 UX 只有两态（ADR-0004 D2） -->
+    <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
+    <!-- minSdk 26 兼容：26–32 仍用旧的读外部存储权限，33 起失效 -->
+    <uses-permission
+        android:name="android.permission.READ_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32" />
+
+    <!-- 通知权限（Android 13+ 运行时）：媒体通知的显示前提，未授予时服务不死、仅通知不显示（T5） -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
+    <!-- 后台播放前台服务（Android 14+ 强制声明类型，ADR-0004 D1；随 T5 生效） -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
 
     <application
         android:name=".EchoApplication"
