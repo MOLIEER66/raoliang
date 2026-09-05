@@ -3,15 +3,20 @@ package com.echomusic.app.feature.player
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.echomusic.app.core.data.repository.LibraryRepository
+import com.echomusic.app.core.designsystem.palette.EchoPaletteSpec
+import com.echomusic.app.core.designsystem.palette.PaletteRepository
 import com.echomusic.app.core.model.PlayMode
 import com.echomusic.app.core.model.Song
+import com.echomusic.app.core.model.SongSource
 import com.echomusic.app.core.playback.PlaybackController
 import com.echomusic.app.core.playback.PlaybackMediaId
 import com.echomusic.app.core.playback.PlaybackStatus
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
@@ -27,6 +32,7 @@ import kotlinx.coroutines.flow.stateIn
 class PlayerViewModel(
     private val controller: PlaybackController,
     repository: LibraryRepository,
+    private val paletteRepository: PaletteRepository,
 ) : ViewModel() {
 
     /** 合成后的播放态：controller 快照 + mediaId→Song 回填 */
@@ -36,7 +42,7 @@ class PlayerViewModel(
                 playback.currentSong != null -> flowOf(playback.currentSong)
                 else -> {
                     val decoded = PlaybackMediaId.parse(playback.currentMediaId)
-                    if (decoded != null && decoded.source == com.echomusic.app.core.model.SongSource.LOCAL) {
+                    if (decoded != null && decoded.source == SongSource.LOCAL) {
                         repository.observeSong(decoded.songId)
                     } else {
                         flowOf(null)
@@ -58,6 +64,24 @@ class PlayerViewModel(
 
     /** 进度（播放中 500ms 一跳，波形进度条数据源） */
     val positionMs: StateFlow<Long> = controller.positionMs
+
+    /** 队列快照（播放页「队列」面板；进程重启后为空） */
+    val queue: StateFlow<List<Song>> = controller.queue
+
+    /**
+     * 当前曲目的 Echo Palette（T9 管线的 UI 接线）：封面取色 → 兜底链
+     * （无封面 → hash 渐变；灰度封面 → 品牌回声青基准板，§1.3）。
+     * null = 无播放 → EchoTheme 落品牌基准板。
+     */
+    val paletteSpec: StateFlow<EchoPaletteSpec?> = uiState
+        .map { it.song }
+        .distinctUntilChanged()
+        .flatMapLatest { song ->
+            flow {
+                emit(if (song == null) null else paletteRepository.paletteWithFallback(song))
+            }
+        }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
 
     /** 首帧连接 session（幂等；失败可重试） */
     fun connect() = controller.connect()

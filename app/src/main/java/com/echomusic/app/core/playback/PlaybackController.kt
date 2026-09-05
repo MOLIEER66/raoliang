@@ -25,6 +25,13 @@ interface PlaybackController {
     /** 播放进度（毫秒；播放中约 500ms 一跳，暂停时静止） */
     val positionMs: StateFlow<Long>
 
+    /**
+     * 队列快照（T8 播放页「队列」入口的数据面）：playQueue 时缓存的曲目列表。
+     * 进程重启后为空（session 侧队列重建归 M4 playback resumption），
+     * 此时队列面板只显示当前位置与当前曲目。
+     */
+    val queue: StateFlow<List<Song>>
+
     /** 异步连接 PlaybackService 的 session（幂等；失败自动可重试，再调一次即可） */
     fun connect()
 

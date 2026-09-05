@@ -34,4 +34,17 @@
     <string name="placeholder_playlist_body">M3 上线本地歌单管理，现在先把喜欢的歌听起来</string>
     <string name="placeholder_settings_title">设置即将上线</string>
     <string name="placeholder_settings_body">当前版本 %1$s；外观、音源与播放设置随后续里程碑开放</string>
+
+    <!-- T8：正在播放页 -->
+    <string name="np_title">正在播放</string>
+    <string name="np_collapse">收起</string>
+    <string name="np_queue">队列</string>
+    <string name="np_queue_count">%1$d 首</string>
+    <string name="np_queue_empty">进程重启后队列快照暂不可用（M4 支持恢复），当前曲目仍在正常播放。</string>
+    <string name="np_shuffle">随机播放</string>
+    <string name="np_previous">上一首</string>
+    <string name="np_next">下一首</string>
+    <string name="np_repeat">播放模式</string>
+    <string name="np_favorite_placeholder">收藏（M3 开放）</string>
+    <string name="np_info_album_label">专辑</string>
 </resources>

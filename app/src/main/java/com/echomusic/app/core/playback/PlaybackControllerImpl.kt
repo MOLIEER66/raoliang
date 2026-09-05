@@ -39,6 +39,9 @@ class PlaybackControllerImpl(
     private val _positionMs = MutableStateFlow(0L)
     override val positionMs: StateFlow<Long> = _positionMs.asStateFlow()
 
+    private val _queue = MutableStateFlow<List<Song>>(emptyList())
+    override val queue: StateFlow<List<Song>> = _queue.asStateFlow()
+
     private var handle: SessionHandle? = null
     private var connectRequested = false
     private var settingsSyncStarted = false
@@ -108,6 +111,7 @@ class PlaybackControllerImpl(
         if (songs.isEmpty()) return
         val index = startIndex.coerceIn(0, songs.lastIndex)
         queueSongs = songs
+        _queue.value = songs
         // 乐观更新：点播立即出迷你条（status 短暂为 PAUSED，由会话事件修正为 BUFFERING/PLAYING）
         _uiState.update {
             it.copy(
@@ -151,6 +155,7 @@ class PlaybackControllerImpl(
         tickerJob?.cancel()
         tickerJob = null
         pendingCommands.clear()
+        _queue.value = emptyList()
         handle?.release()
         handle = null
         connectRequested = false

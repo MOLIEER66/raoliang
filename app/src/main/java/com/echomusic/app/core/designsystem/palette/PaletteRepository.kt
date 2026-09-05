@@ -50,6 +50,28 @@ class PaletteRepository(
         return spec
     }
 
+    /**
+     * §1.3 兜底链一步到位（播放页/主题接线用）：
+     * 封面取色 → 无封面（位图拿不到）→ 「歌手+曲名」hash 选 8 组回声渐变之一（同曲同色）；
+     * 有封面但全灰度（C < 8）/无可用簇 → 品牌回声青基准板。结果同样按专辑缓存。
+     */
+    suspend fun paletteWithFallback(song: Song): EchoPaletteSpec {
+        cache.get(paletteKey(song))?.let { return it }
+        val bitmap = loadCoverBitmap(song)
+        val spec = if (bitmap == null) {
+            EchoPaletteMapper.hashFallback(song.songKey)
+        } else {
+            withContext(ioDispatcher) {
+                val software = ensureSoftwareBitmap(bitmap)
+                val pixels = IntArray(software.width * software.height)
+                software.getPixels(pixels, 0, software.width, 0, 0, software.width, software.height)
+                EchoPaletteExtractor.extract(pixels)
+            } ?: EchoPaletteMapper.brandBaseline()
+        }
+        cache.put(paletteKey(song), spec)
+        return spec
+    }
+
     private suspend fun loadCoverBitmap(song: Song): Bitmap? {
         val request = ImageRequest.Builder(context)
             .data(AlbumCoverRef(albumId = song.albumId, filePath = song.path))
