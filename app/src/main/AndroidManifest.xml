@@ -19,7 +19,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/Theme.EchoMusic">
+        android:theme="@style/Theme.Raoliang">
 
         <!-- 预测性返回（PRD §7）：迁移到 OnBackInvokedCallback，Android 16 上手势动画完整 -->
         <activity

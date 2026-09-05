@@ -1,4 +1,4 @@
-# 回声音乐 EchoMusic（暂定名）
+# 绕梁 Raoliang
 
 > 一个开源的安卓本地音乐播放器：本体零曲库，支持导入用户自备的「洛雪(LX)自定义音源」脚本获得在线播放能力。工程规范对标大厂开源项目。
 
@@ -37,7 +37,7 @@ MIT
 
 ### CI 与下载
 
-- 每次 push 到 `main` / 每个 PR：CI 自动 `assembleDebug` + `lint`，APK 在 [Actions](../../actions) 对应 run 页底部的 **Artifacts**（`EchoMusic-debug-apk`）
+- 每次 push 到 `main` / 每个 PR：CI 自动 `assembleDebug` + `lint`，APK 在 [Actions](../../actions) 对应 run 页底部的 **Artifacts**（`Raoliang-debug-apk`）
 - 打 `v*` tag（如 `v0.1.0`）：自动额外构建 release APK 并创建 **GitHub Release** 附上 APK——群友直接去 [Releases](../../releases) 下载，无需登录
 - 工作流定义：[.github/workflows/android-ci.yml](.github/workflows/android-ci.yml)
 

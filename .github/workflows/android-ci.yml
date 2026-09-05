@@ -1,4 +1,4 @@
-# 回声音乐 EchoMusic · Android CI
+# 绕梁 Raoliang · Android CI
 #
 # 职责：
 #   1. push / pull_request：验证「能编译 + lint 干净」，上传可安装的 debug APK 供下载
@@ -65,7 +65,7 @@ jobs:
       - name: Upload debug APK
         uses: actions/upload-artifact@v7
         with:
-          name: EchoMusic-debug-apk
+          name: Raoliang-debug-apk
           path: app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
 
@@ -79,7 +79,7 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/v')
         uses: actions/upload-artifact@v7
         with:
-          name: EchoMusic-release-apk
+          name: Raoliang-release-apk
           path: app/build/outputs/apk/release/*.apk
           if-no-files-found: error
 

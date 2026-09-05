@@ -1,4 +1,4 @@
-// 回声音乐 EchoMusic · 工程设置
+// 绕梁 Raoliang · 工程设置
 // 仓库唯一入口：声明插件与依赖的仓库来源，子模块在这里 include。
 pluginManagement {
     repositories {
@@ -30,5 +30,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "EchoMusic"
+rootProject.name = "Raoliang"
 include(":app")

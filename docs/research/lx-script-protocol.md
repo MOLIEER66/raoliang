@@ -1,4 +1,4 @@
-# LX 自定义音源脚本协议剖析（EchoMusic M2 前置研究）
+# LX 自定义音源脚本协议剖析（Raoliang M2 前置研究）
 
 状态：研究完成（2026-09-05） · 证据等级：A（官方文档 + 真实运行标本双重验证）
 关联：[ADR-0002](../ADR-0002-source-plugin.md) · [ADR-0003-js-runtime](ADR-0003-js-runtime.md) · [PRD §6](../PRD-v0.1.md)

@@ -4,7 +4,7 @@
     系统栏（状态栏/导航栏）外观由 MainActivity 里的 enableEdgeToEdge() 动态接管。
 -->
 <resources>
-    <style name="Theme.EchoMusic" parent="android:Theme.Material.Light.NoActionBar">
+    <style name="Theme.Raoliang" parent="android:Theme.Material.Light.NoActionBar">
         <item name="android:windowBackground">@color/window_background</item>
     </style>
 </resources>

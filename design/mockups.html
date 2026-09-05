@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>回声音乐 EchoMusic · 高保真视觉稿</title>
+<title>绕梁 Raoliang · 高保真视觉稿</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 html{-webkit-text-size-adjust:100%}
@@ -157,26 +157,44 @@ footer{max-width:900px;margin:0 auto;padding:24px 32px 80px;text-align:center;fo
 .itop{position:relative;display:flex;align-items:center;justify-content:space-between;margin:66px 22px 0;height:24px}
 .cttl{position:absolute;left:0;right:0;top:50%;transform:translateY(-50%);text-align:center;font-size:13px;font-weight:640;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .itop .ttl{font-size:11.5px;font-weight:650;letter-spacing:3px;color:var(--sub)}
-.bigcv{position:relative;width:334px;height:334px;margin:26px auto 0;border-radius:26px;overflow:hidden;box-shadow:var(--shadowcv)}
-.bigcv::after{content:"";position:absolute;inset:0;border-radius:26px;background:linear-gradient(155deg,rgba(255,255,255,.2),transparent 42%)}
-.npmeta{padding:30px 26px 0}
-.npmeta h3{font-size:27px;font-weight:760;letter-spacing:-.3px}
-.npmeta .art{margin-top:8px;font-size:14px;color:var(--sub)}
-.nact{display:flex;align-items:center;justify-content:space-between;padding:18px 26px 0}
-.nact .lk{color:var(--acc)}
-.nact .grp{display:flex;align-items:center;gap:26px;color:var(--txt)}
+/* 刊头舞台（S2 非对称构图）与回声扩散余波（S3） */
+.stage{position:relative;margin:24px 26px 0;height:264px}
+.stagecv{position:absolute;right:0;top:0;width:264px;height:264px;border-radius:26px;overflow:hidden;box-shadow:var(--shadowcv)}
+.stagecv::after{content:"";position:absolute;inset:0;border-radius:26px;background:linear-gradient(155deg,rgba(255,255,255,.2),transparent 42%)}
+.ring{position:absolute;right:0;top:0;width:264px;height:264px;border:1.5px solid var(--acc);border-radius:38px;pointer-events:none}
+.ring.r1{margin:-14px -14px 0 0;opacity:.16}
+.ring.r2{margin:-34px -34px 0 0;border-radius:56px;opacity:.07}
+.vhead{position:absolute;left:2px;top:0;height:264px;display:flex;flex-direction:column;align-items:center;gap:13px}
+.vtitle{writing-mode:vertical-rl;font-size:33px;font-weight:780;letter-spacing:7px;line-height:1}
+.vsep{width:2px;height:32px;border-radius:1px;background:var(--acc);box-shadow:0 0 12px var(--accglow)}
+.vartist{writing-mode:vertical-rl;font-size:10.5px;font-weight:560;letter-spacing:1.5px;color:var(--sub)}
+/* 歌词主体 */
+.lyrblk{display:flex;gap:13px;margin:34px 26px 0}
+.lyr{flex:1;min-width:0}
+.vbar{width:3.5px;border-radius:2px;background:var(--acc);box-shadow:0 0 14px var(--accglow);flex:none}
+.lp{font-size:14px;font-weight:500;color:var(--sub)}
+.lc{margin-top:6px;font-size:22px;font-weight:740;line-height:1.35}
+.ln{margin-top:8px;font-size:14px;font-weight:500;color:var(--sub)}
+.nact2{display:flex;align-items:center;gap:24px;margin:18px 26px 0}
+.nact2 .lk{color:var(--acc)}
+.nact2 .sp{flex:1}
+/* 波形进度条（S1 声纹家族） */
+.wavewrap{margin:22px 26px 0}
+.wave{display:flex;align-items:center;gap:3px;height:20px}
+.wave span{width:4px;height:var(--h);border-radius:2px;background:linear-gradient(var(--acc),var(--acc)) left/var(--f,0) 100% no-repeat,var(--line)}
+.wtm{display:flex;justify-content:space-between;margin-top:9px;font-size:11px;color:var(--sub)}
+.wtm b{color:var(--txt);font-weight:640}
+.srcrow{display:flex;align-items:center;gap:10px;margin:24px 26px 0;font-size:11.5px;color:var(--sub)}
 .pr{padding:20px 26px 0}
 .bar{position:relative;height:4px;border-radius:2px;background:var(--line)}
 .bar i{position:absolute;left:0;top:0;bottom:0;border-radius:2px;background:var(--acc)}
 .pr .tm{display:flex;justify-content:space-between;margin-top:8px;font-size:11px;color:var(--sub)}
 .pr .tm b{color:var(--txt);font-weight:640}
-.ctl{display:flex;align-items:center;justify-content:space-between;padding:16px 26px 0}
+.ctl{display:flex;align-items:center;justify-content:space-between;margin:24px 26px 0}
 .ctl .side{color:var(--sub)}
 .ctl .skip{color:var(--txt)}
 .playb{width:74px;height:74px;border-radius:50%;background:var(--acc);color:var(--acc-ink);display:flex;align-items:center;justify-content:center;box-shadow:0 14px 34px var(--accglow)}
 .playb.sm{width:54px;height:54px}
-.peek{display:flex;align-items:center;gap:9px;margin:18px 26px 0;color:var(--sub);font-size:12.5px}
-.peek .pt{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 
 /* ---------- 歌词 ---------- */
 .lrc{padding:36px 26px 0;display:flex;flex-direction:column;gap:30px}
@@ -245,8 +263,8 @@ footer{max-width:900px;margin:0 auto;padding:24px 32px 80px;text-align:center;fo
 </svg>
 
 <header class="hero">
-  <p class="kicker">ECHO MUSIC · VISUAL DESIGN V1.0</p>
-  <h1>回声音乐 · 高保真视觉稿</h1>
+  <p class="kicker">VISUAL DESIGN V1.0 · 品牌名：绕梁 RAOLIANG</p>
+  <h1>绕梁· 高保真视觉稿</h1>
   <p class="slogan">「界面，是封面的回声。」—— 播放开始后，系统从专辑封面提取种子色，背景、主色与光晕随之改变。<b>换一首歌，就换一个房间。</b></p>
   <div class="meta">
     <span>Kotlin · Compose · Material 3</span>
@@ -335,19 +353,25 @@ footer{max-width:900px;margin:0 auto;padding:24px 32px 80px;text-align:center;fo
         <svg width="24" height="24" style="color:var(--txt)"><use href="#i-queue"/></svg>
       </div>
 
-      <div class="bigcv g-yq"></div>
-
-      <div class="npmeta"><h3>夜曲</h3><div class="art">周杰伦 · 十一月的萧邦 · 无损 SQ</div></div>
-
-      <div class="nact">
-        <svg width="24" height="24" class="lk"><use href="#i-heart-f"/></svg>
-        <span class="grp">
-          <svg width="22" height="22"><use href="#i-download"/></svg>
-          <svg width="22" height="22"><use href="#i-more"/></svg>
-        </span>
+      <div class="stage">
+        <span class="ring r1"></span><span class="ring r2"></span>
+        <div class="stagecv g-yq"></div>
+        <div class="vhead"><div class="vtitle">夜曲</div><div class="vsep"></div><div class="vartist">周杰伦 · 十一月的萧邦</div></div>
       </div>
 
-      <div class="pr"><div class="bar"><i style="width:40%"></i></div><div class="tm"><b>1:32</b><span>-2:14</span></div></div>
+      <div class="lyrblk"><span class="vbar"></span><div class="lyr"><div class="lp">失去你 爱恨开始分明</div><div class="lc">为你弹奏萧邦的夜曲</div><div class="ln">纪念我死去的爱情</div></div></div>
+
+      <div class="nact2">
+        <svg width="24" height="24" class="lk"><use href="#i-heart-f"/></svg>
+        <span class="sp"></span>
+        <svg width="22" height="22"><use href="#i-download"/></svg>
+        <svg width="22" height="22"><use href="#i-more"/></svg>
+      </div>
+
+      <div class="wavewrap">
+        <div class="wave"><span style="--h:6px;--f:100%"></span><span style="--h:8px;--f:100%"></span><span style="--h:5px;--f:100%"></span><span style="--h:9px;--f:100%"></span><span style="--h:7px;--f:100%"></span><span style="--h:10px;--f:100%"></span><span style="--h:6px;--f:100%"></span><span style="--h:8px;--f:100%"></span><span style="--h:11px;--f:100%"></span><span style="--h:7px;--f:100%"></span><span style="--h:9px;--f:100%"></span><span style="--h:12px;--f:100%"></span><span style="--h:8px;--f:100%"></span><span style="--h:6px;--f:100%"></span><span style="--h:10px;--f:100%"></span><span style="--h:13px;--f:100%"></span><span style="--h:9px;--f:100%"></span><span style="--h:11px;--f:100%"></span><span style="--h:8px;--f:100%"></span><span style="--h:14px;--f:45%"></span><span style="--h:10px"></span><span style="--h:12px"></span><span style="--h:15px"></span><span style="--h:9px"></span><span style="--h:11px"></span><span style="--h:16px"></span><span style="--h:12px"></span><span style="--h:14px"></span><span style="--h:10px"></span><span style="--h:17px"></span><span style="--h:13px"></span><span style="--h:15px"></span><span style="--h:11px"></span><span style="--h:16px"></span><span style="--h:12px"></span><span style="--h:18px"></span><span style="--h:14px"></span><span style="--h:10px"></span><span style="--h:15px"></span><span style="--h:9px"></span><span style="--h:13px"></span><span style="--h:7px"></span><span style="--h:10px"></span><span style="--h:6px"></span><span style="--h:8px"></span><span style="--h:5px"></span><span style="--h:7px"></span><span style="--h:4px"></span></div>
+        <div class="wtm"><b>1:32</b><span>-2:14</span></div>
+      </div>
 
       <div class="ctl">
         <svg class="side" width="23" height="23"><use href="#i-shuffle"/></svg>
@@ -357,15 +381,11 @@ footer{max-width:900px;margin:0 auto;padding:24px 32px 80px;text-align:center;fo
         <svg class="side" width="23" height="23"><use href="#i-repeat1"/></svg>
       </div>
 
-      <div class="peek">
-        <svg width="15" height="15"><use href="#i-mic"/></svg>
-        <span class="pt">为你弹奏萧邦的夜曲 · 纪念我死去的爱情</span>
-        <span class="badge"><i></i>洛雪·公益版</span>
-      </div>
+      <div class="srcrow"><span class="badge"><i></i>洛雪·公益版</span><span>经洛雪音源播放 · 无损 SQ</span></div>
 
       <div class="gb"></div>
     </div></div>
-    <figcaption><b>02 · 正在播放</b><span>深色《夜曲》· 沉浸背景与主色取自封面：靛蓝夜色 × 香槟金月晕</span></figcaption>
+    <figcaption><b>02 · 正在播放</b><span>深色《夜曲》· 刊头式构图：竖排歌名 × 右置封面，双环为「回声扩散」转场余波</span></figcaption>
   </figure>
 
   <!-- 03 歌词 · 深色《夜曲》 -->
@@ -540,19 +560,25 @@ footer{max-width:900px;margin:0 auto;padding:24px 32px 80px;text-align:center;fo
         <svg width="24" height="24" style="color:var(--txt)"><use href="#i-queue"/></svg>
       </div>
 
-      <div class="bigcv g-qt"></div>
-
-      <div class="npmeta"><h3>晴天</h3><div class="art">周杰伦 · 叶惠美 · 本地 FLAC</div></div>
-
-      <div class="nact">
-        <svg width="24" height="24" class="lk"><use href="#i-heart-f"/></svg>
-        <span class="grp">
-          <svg width="22" height="22"><use href="#i-download"/></svg>
-          <svg width="22" height="22"><use href="#i-more"/></svg>
-        </span>
+      <div class="stage">
+        <span class="ring r1"></span><span class="ring r2"></span>
+        <div class="stagecv g-qt"></div>
+        <div class="vhead"><div class="vtitle">晴天</div><div class="vsep"></div><div class="vartist">周杰伦 · 叶惠美</div></div>
       </div>
 
-      <div class="pr"><div class="bar"><i style="width:25%"></i></div><div class="tm"><b>1:05</b><span>-3:24</span></div></div>
+      <div class="lyrblk"><span class="vbar"></span><div class="lyr"><div class="lp">刮风这天 我试过握着你手</div><div class="lc">但偏偏 雨渐渐 大到我看你不见</div><div class="ln">还要多久 我才能在你身边</div></div></div>
+
+      <div class="nact2">
+        <svg width="24" height="24" class="lk"><use href="#i-heart-f"/></svg>
+        <span class="sp"></span>
+        <svg width="22" height="22"><use href="#i-download"/></svg>
+        <svg width="22" height="22"><use href="#i-more"/></svg>
+      </div>
+
+      <div class="wavewrap">
+        <div class="wave"><span style="--h:5px;--f:100%"></span><span style="--h:7px;--f:100%"></span><span style="--h:4px;--f:100%"></span><span style="--h:8px;--f:100%"></span><span style="--h:6px;--f:100%"></span><span style="--h:9px;--f:100%"></span><span style="--h:5px;--f:100%"></span><span style="--h:7px;--f:100%"></span><span style="--h:10px;--f:100%"></span><span style="--h:6px;--f:100%"></span><span style="--h:8px;--f:100%"></span><span style="--h:11px;--f:100%"></span><span style="--h:9px;--f:45%"></span><span style="--h:7px"></span><span style="--h:9px"></span><span style="--h:12px"></span><span style="--h:8px"></span><span style="--h:10px"></span><span style="--h:13px"></span><span style="--h:9px"></span><span style="--h:11px"></span><span style="--h:8px"></span><span style="--h:12px"></span><span style="--h:10px"></span><span style="--h:14px"></span><span style="--h:11px"></span><span style="--h:13px"></span><span style="--h:9px"></span><span style="--h:15px"></span><span style="--h:12px"></span><span style="--h:14px"></span><span style="--h:10px"></span><span style="--h:13px"></span><span style="--h:11px"></span><span style="--h:16px"></span><span style="--h:12px"></span><span style="--h:15px"></span><span style="--h:13px"></span><span style="--h:10px"></span><span style="--h:14px"></span><span style="--h:8px"></span><span style="--h:11px"></span><span style="--h:6px"></span><span style="--h:9px"></span><span style="--h:5px"></span><span style="--h:7px"></span><span style="--h:4px"></span><span style="--h:6px"></span></div>
+        <div class="wtm"><b>1:05</b><span>-3:24</span></div>
+      </div>
 
       <div class="ctl">
         <svg class="side" width="23" height="23"><use href="#i-shuffle"/></svg>
@@ -562,15 +588,11 @@ footer{max-width:900px;margin:0 auto;padding:24px 32px 80px;text-align:center;fo
         <svg class="side" width="23" height="23"><use href="#i-repeat1"/></svg>
       </div>
 
-      <div class="peek">
-        <svg width="15" height="15"><use href="#i-mic"/></svg>
-        <span class="pt">但偏偏 雨渐渐 大到我看你不见</span>
-        <span class="badge b-local"><i></i>本地 FLAC</span>
-      </div>
+      <div class="srcrow"><span class="badge b-local"><i></i>本地 FLAC</span><span>本地文件 · 44.1kHz/24bit</span></div>
 
       <div class="gb"></div>
     </div></div>
-    <figcaption><b>06 · 正在播放</b><span>浅色《晴天》· 同一布局换一首歌就换一套色：奶油晨光 × 天青色</span></figcaption>
+    <figcaption><b>06 · 正在播放</b><span>浅色《晴天》· 同一刊头构图；波形进度与导航声波同属「声纹家族」</span></figcaption>
   </figure>
 
   <!-- 07 歌词 · 浅色《晴天》 -->
@@ -678,7 +700,7 @@ footer{max-width:900px;margin:0 auto;padding:24px 32px 80px;text-align:center;fo
 </main>
 
 <footer>
-  回声音乐 EchoMusic · 视觉稿 v1.0 ｜ 详细口径见 DESIGN-SYSTEM.md 与 SCREENS.md<br>
+  绕梁（命名定案 · 命名候选与撞名检索见 DESIGN-SYSTEM §8.3）· 视觉稿 v1.0 ｜ 详细口径见 DESIGN-SYSTEM.md 与 SCREENS.md<br>
   图标为内联 SVG（24dp 栅格 · 2dp 圆头描边）｜ 专辑封面以 CSS 渐变示意，真实场景取自音频内嵌封面 ｜ 导航声波指示器与光标为可动效示意
 </footer>
 

@@ -1,4 +1,4 @@
-// 回声音乐 EchoMusic · app 模块
+// 绕梁 Raoliang · app 模块
 // M0：空壳工程，只负责"能编译、能安装、显示一行字"。
 plugins {
     alias(libs.plugins.android.application)
