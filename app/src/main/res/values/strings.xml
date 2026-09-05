@@ -4,4 +4,7 @@
     <string name="app_name">绕梁</string>
     <string name="m0_status">M0 骨架已就位</string>
     <string name="m0_placeholder">播放内核（Media3）与音源系统将在后续里程碑接入。</string>
+
+    <!-- T5：媒体通知通道（DefaultMediaNotificationProvider 的通道名，系统通知设置里展示） -->
+    <string name="media_notification_channel_name">正在播放</string>
 </resources>

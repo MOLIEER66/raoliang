@@ -2,9 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <!--
-        T1 权限与清单（M1-BREAKDOWN T1 / ADR-0004 D2、D1）。
-        本波次（数据层）只声明权限；PlaybackService 的 <service> 注册随 T5（播放引擎波次）添加，
-        避免指向尚不存在的类。
+        权限与清单（M1-BREAKDOWN T1/T5 / ADR-0004 D1、D2）。
+        T1 声明全部权限；T5 补上 PlaybackService 的 <service> 注册（媒体通知/锁屏控制、后台播放）。
     -->
 
     <!-- 本地音频读取：Android 13+ 细分媒体权限；音频无"部分访问"态，权限 UX 只有两态（ADR-0004 D2） -->
@@ -17,7 +16,7 @@
     <!-- 通知权限（Android 13+ 运行时）：媒体通知的显示前提，未授予时服务不死、仅通知不显示（T5） -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
-    <!-- 后台播放前台服务（Android 14+ 强制声明类型，ADR-0004 D1；随 T5 生效） -->
+    <!-- 后台播放前台服务（Android 14+ 强制声明类型，ADR-0004 D1；T5 起随 PlaybackService 生效） -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
 
@@ -40,6 +39,20 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!--
+            T5 播放服务（ADR-0004 D1 方案 A）：MediaSessionService 标准路径。
+            exported=true + intent-filter 是官方后台播放指南要求的会话发现入口；
+            foregroundServiceType="mediaPlayback" 为 Android 14+ 强制声明（权限见上）。
+        -->
+        <service
+            android:name=".core.playback.PlaybackService"
+            android:exported="true"
+            android:foregroundServiceType="mediaPlayback">
+            <intent-filter>
+                <action android:name="androidx.media3.session.MediaSessionService" />
+            </intent-filter>
+        </service>
     </application>
 
 </manifest>
