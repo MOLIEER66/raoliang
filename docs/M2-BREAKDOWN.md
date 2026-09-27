@@ -37,13 +37,15 @@
 
 产出：`LxRuntime` 接口 + `JsEngineRuntime`（ADR-0003 §4 架构落点）。
 
-- [ ] `JavaScriptSandbox.createConnectedInstanceAsync` + `isSupported()` 探测（R1：不可用给可读提示，不崩）
-- [ ] 每脚本一个 `JavaScriptIsolate`（多实例并存、故障隔离——P0-15/16 的地基）
-- [ ] `lx-prelude.js`（~200 行）：构造 `globalThis.lx`、`EVENT_NAMES`、`on/send` 握手、`request()` Promise 化 + callId 关联、双签名 callback 派发、`setTimeout/clearTimeout`（P0-10）、`console.log/warn/error` 捕获 1024 截断（P0-11）
-- [ ] MessagePort 信道；特性不可用 → evaluate 字符串信道降级（R3，功能等价）
-- [ ] isolate 生命周期：超时熔断、崩溃回调、销毁时终止在途请求（P1-4 真实生效）
-- [ ] 胶水协议自测：Node 环境跑 prelude + 假宿主（握手/分发/双签名/Promise/异常转发全用例），不依赖 Android
-- [ ] JVM 单测：上层逻辑用 `LxRuntime` 假体（沙箱真身隔离在 JsEngineRuntime 单文件，真机归 T9）
+📌 实测结论（2026-09-27）：① API 全部经 AAR 反编译核实（javap），官方文档无一处凭记忆——关键发现：`TerminationInfo` 构造器包私有、JS 侧端口获取是 `await android.getNamedPort(name)`（AOSP MessagePortTest 一手证据）；② lx-prelude.js 227 行，Node vm 沙箱契约自测 18 用例 + HYW 标本真实握手 22 用例全绿（tools/test-prelude.mjs，五平台 sources/actions 全开/hires 扩展与协议研究记录一致）；③ LxWire 信道编解码纯函数 17 JVM 用例；④ 开发沙箱 4GB 内存两次 OOM（gradle.properties 降至 1536m + kotlin.daemon 1024m 后稳定）。
+
+- ✅ `JavaScriptSandbox.createConnectedInstanceAsync` + `isSupported()` 探测（R1：不可用给可读提示，不崩）
+- ✅ 每脚本一个 `JavaScriptIsolate`（多实例并存、故障隔离——P0-15/16 的地基）
+- ✅ `lx-prelude.js`（~200 行）：构造 `globalThis.lx`、`EVENT_NAMES`、`on/send` 握手、`request()` Promise 化 + callId 关联、双签名 callback 派发、`setTimeout/clearTimeout`（P0-10）、`console.log/warn/error` 捕获 1024 截断（P0-11）
+- ✅ MessagePort 信道；特性不可用 → evaluate 字符串信道降级（R3，功能等价）
+- ✅ isolate 生命周期：超时熔断、崩溃回调、销毁时终止在途请求（P1-4 真实生效）
+- ✅ 胶水协议自测：Node 环境跑 prelude + 假宿主（握手/分发/双签名/Promise/异常转发全用例），不依赖 Android
+- ✅ JVM 单测：上层逻辑用 `LxRuntime` 假体（沙箱真身隔离在 JsEngineRuntime 单文件，真机归 T9）
 
 ### T3 · request 网络桥 LxBridge（1 天，依赖 T2）
 

@@ -16,6 +16,12 @@ kotlin {
 dependencies {
     api(project(":core:model"))
 
+    // 协程（LxRuntime 的 suspend/Flow 契约）
+    api(libs.kotlinx.coroutines.core)
+
+    // JSON 树 API（T2 LxWire 信道编解码；JsonElement 运行时用法，无需编译器插件）
+    implementation(libs.kotlinx.serialization.json)
+
     // JVM 单测（T2 起：标本脚本驱动的协议用例）
     testImplementation(libs.junit)
 }

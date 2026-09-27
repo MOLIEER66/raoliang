@@ -30,6 +30,9 @@ koin = "4.1.1"
 # 协程：data/playback 模块直接 import kotlinx.coroutines（T1 拆线起显式声明，版本对齐
 #   当前解析结果 1.10.2——Koin 4.1.1 传递 1.9.0 被上游升到 1.10.2，显式钉住防漂移）
 coroutines = "1.10.2"
+# kotlinx-serialization（T2 LxWire 信道编解码）：只用 JsonElement 运行时树 API，
+#   不用 @Serializable 编译器插件——协议"宁多勿少"的姿态适合树操作，且零插件成本
+serialization-json = "1.9.0"
 # Room3：D4 决策，新包 androidx.room3（coroutines-only，ktx 已并入 runtime，AAR minCompileSdk=34）
 room3 = "3.0.2"
 # androidx.sqlite：Room3 3.0.2 传递依赖 2.7.0；BundledSQLiteDriver（JVM 单测内存库）在此构件
@@ -85,6 +88,9 @@ koin-core = { group = "io.insert-koin", name = "koin-core", version.ref = "koin"
 # 协程（T1 起：直接 import 的模块显式声明，不靠传递依赖）
 kotlinx-coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "coroutines" }
 kotlinx-coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "coroutines" }
+
+# JSON 树 API（T2 LxWire：洛雪协议信道编解码，纯运行时无编译器插件）
+kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "serialization-json" }
 
 # Room3（D4：新包 androidx.room3，无 ktx 构件——coroutines 支持已并入 runtime）
 androidx-room3-runtime = { group = "androidx.room3", name = "room3-runtime", version.ref = "room3" }

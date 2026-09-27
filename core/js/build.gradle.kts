@@ -34,6 +34,9 @@ dependencies {
     // JS Engine（ADR-0003 主选：沙箱在 WebView Provider 进程，APK 零增重，16KB 页无风险）
     implementation(libs.androidx.javascriptengine)
 
+    // JSON 树 API（LxRuntime 契约的 JsonElement 类型；source 模块的 implementation 不传递）
+    implementation(libs.kotlinx.serialization.json)
+
     // JVM 单测（T2 起：预置胶水与端口分发器的假体用例）
     testImplementation(libs.junit)
 }
