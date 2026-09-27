@@ -64,6 +64,9 @@ dependencies {
     implementation(libs.androidx.media3.exoplayer)
     implementation(libs.androidx.media3.session)
 
+    // JS Engine（ADR-0003 M2 主选）：T1 拆线时随 LxRuntime 迁入 :core:js
+    implementation(libs.androidx.javascriptengine)
+
     // Lifecycle（2.10.0：最后一个兼容 compileSdk 36 的稳定版，2.11.0 要求 compileSdk 37）
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.lifecycle.runtime.compose)
