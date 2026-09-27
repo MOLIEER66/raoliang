@@ -13,8 +13,6 @@ import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.session.DefaultMediaNotificationProvider
 import androidx.media3.session.MediaSession
 import androidx.media3.session.MediaSessionService
-import com.echomusic.app.MainActivity
-import com.echomusic.app.R
 import com.echomusic.app.core.data.repository.LibraryRepository
 import com.echomusic.app.core.model.SongSource
 import com.google.common.util.concurrent.ListenableFuture
@@ -48,6 +46,9 @@ import org.koin.android.ext.android.inject
 class PlaybackService : MediaSessionService() {
 
     private val libraryRepository: LibraryRepository by inject()
+
+    /** 宿主页面意图（T1 拆线：app 层注入，见 [SessionActivityProvider]） */
+    private val sessionActivityProvider: SessionActivityProvider by inject()
 
     private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
     private val playCountTracker = PlayCountTracker()
@@ -193,7 +194,9 @@ class PlaybackService : MediaSessionService() {
     private fun sessionActivityIntent(): PendingIntent = PendingIntent.getActivity(
         this,
         0,
-        Intent(this, MainActivity::class.java),
+        // T1 拆线：MainActivity 引用反转给 app 装配层（SessionActivityProvider），
+        // 库模块不再知道宿主 Activity 类名
+        sessionActivityProvider.create(this),
         PendingIntent.FLAG_IMMUTABLE,
     )
 

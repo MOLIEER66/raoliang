@@ -3,8 +3,7 @@
 <resources>
     <string name="app_name">绕梁</string>
 
-    <!-- T5：媒体通知通道（DefaultMediaNotificationProvider 的通道名，系统通知设置里展示） -->
-    <string name="media_notification_channel_name">正在播放</string>
+    <!-- T5：媒体通知通道名已随 PlaybackService 迁至 :core:playback 模块（T1 拆线） -->
 
     <!-- T4：库页四态（SCREENS §1 文案逐字对应） -->
     <string name="library_title">音乐库</string>

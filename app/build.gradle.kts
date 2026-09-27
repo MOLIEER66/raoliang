@@ -4,7 +4,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
-    alias(libs.plugins.ksp)
+    // KSP 已随 Room3 迁至 :core:data（T1 拆线，ADR-0004 D3）
 }
 
 android {
@@ -47,11 +47,6 @@ kotlin {
     }
 }
 
-// Room3 schema 导出（BREAKDOWN T2：schemas 目录进版本库，演进走 migration）
-ksp {
-    arg("room.schemaLocation", "$projectDir/schemas")
-}
-
 dependencies {
     // Compose：版本全部由 BOM 仲裁，这里不写版本号
     implementation(platform(libs.androidx.compose.bom))
@@ -60,12 +55,13 @@ dependencies {
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.material3)
 
-    // Media3 播放内核（ADR-0001）：M0 仅锁版本，M1 起真正接入
-    implementation(libs.androidx.media3.exoplayer)
-    implementation(libs.androidx.media3.session)
+    // T1 拆线（ADR-0004 D3）：数据/播放/模型下沉库模块，app 只保留 UI 装配
+    implementation(project(":core:playback"))
+    implementation(project(":core:data"))
+    implementation(project(":core:model"))
 
-    // JS Engine（ADR-0003 M2 主选）：T1 拆线时随 LxRuntime 迁入 :core:js
-    implementation(libs.androidx.javascriptengine)
+    // 协程（ViewModel / 取色器直接 import，显式声明）
+    implementation(libs.kotlinx.coroutines.android)
 
     // Lifecycle（2.10.0：最后一个兼容 compileSdk 36 的稳定版，2.11.0 要求 compileSdk 37）
     implementation(libs.androidx.lifecycle.viewmodel.compose)
@@ -75,13 +71,6 @@ dependencies {
     // Koin（ADR-0004 D6 回退落点，门禁结论见 toml 注释）
     implementation(libs.koin.android)
     implementation(libs.koin.androidx.compose)
-
-    // Room3（ADR-0004 D4）：新包 androidx.room3，KSP 生成 DAO 实现
-    implementation(libs.androidx.room3.runtime)
-    ksp(libs.androidx.room3.compiler)
-
-    // Preferences DataStore（ADR-0004 D4：设置键值存储，T4 接入）
-    implementation(libs.androidx.datastore.preferences)
 
     // Coil（ADR-0004 D5）：封面加载；3.5.0 回退说明见 toml 注释
     implementation(libs.coil.compose)
@@ -93,8 +82,6 @@ dependencies {
     // 仅调试包需要：IDE 预览渲染
     debugImplementation(libs.androidx.compose.ui.tooling)
 
-    // JVM 单测：Room3 内存库 + 内置 SQLite 驱动（免模拟器跑 DAO 用例，BREAKDOWN §3.1）
+    // JVM 单测（designsystem 取色器等；Room3 内存库用例已随 :core:data 迁走）
     testImplementation(libs.junit)
-    testImplementation(libs.androidx.room3.runtime)
-    testImplementation(libs.androidx.sqlite.bundled.jvm)
 }

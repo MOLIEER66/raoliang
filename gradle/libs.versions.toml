@@ -27,6 +27,9 @@ ksp = "2.3.10"
 #   无法安全消费 Kotlin 2.4.10 源码（即 ADR-0004 R1 本尊）。按 D6 既定回退线切 Koin 4.1.1，
 #   纯 Kotlin DSL、零编译期处理器；升级 AGP 9.2+ 后可重评 Hilt（届时一并升 compileSdk 37）。
 koin = "4.1.1"
+# 协程：data/playback 模块直接 import kotlinx.coroutines（T1 拆线起显式声明，版本对齐
+#   当前解析结果 1.10.2——Koin 4.1.1 传递 1.9.0 被上游升到 1.10.2，显式钉住防漂移）
+coroutines = "1.10.2"
 # Room3：D4 决策，新包 androidx.room3（coroutines-only，ktx 已并入 runtime，AAR minCompileSdk=34）
 room3 = "3.0.2"
 # androidx.sqlite：Room3 3.0.2 传递依赖 2.7.0；BundledSQLiteDriver（JVM 单测内存库）在此构件
@@ -77,6 +80,11 @@ androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecyc
 # Koin（D6 回退落点：DSL service locator，无 KSP/kapt 处理器；T6+ 的 ViewModel 注入走 koin-androidx-compose）
 koin-android = { group = "io.insert-koin", name = "koin-android", version.ref = "koin" }
 koin-androidx-compose = { group = "io.insert-koin", name = "koin-androidx-compose", version.ref = "koin" }
+koin-core = { group = "io.insert-koin", name = "koin-core", version.ref = "koin" }
+
+# 协程（T1 起：直接 import 的模块显式声明，不靠传递依赖）
+kotlinx-coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "coroutines" }
+kotlinx-coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "coroutines" }
 
 # Room3（D4：新包 androidx.room3，无 ktx 构件——coroutines 支持已并入 runtime）
 androidx-room3-runtime = { group = "androidx.room3", name = "room3-runtime", version.ref = "room3" }
@@ -103,7 +111,11 @@ junit = { group = "junit", name = "junit", version.ref = "junit" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
+# T1 拆线：库模块（:core:data/:core:playback/:core:js）用
+android-library = { id = "com.android.library", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+# T1 拆线：纯 JVM 模块（:core:model/:core:source）用
+kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 # Kotlin 2.0 起 Compose 编译器随 Kotlin 一起发布，插件版本号 = Kotlin 版本号
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 # KSP2（注解处理统一走 KSP：Room3 单处理器；Koin 回退后无 DI 处理器）
