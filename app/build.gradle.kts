@@ -15,8 +15,8 @@ android {
         applicationId = "com.echomusic.app"
         minSdk = 26       // Android 8.0，PRD 目标为 Android 10+，26 留出统计余量
         targetSdk = 36    // Android 16（PRD §7 适配清单）
-        versionCode = 1
-        versionName = "0.1.0-m0"
+        versionCode = 2
+        versionName = "0.2.0-m2"
     }
 
     buildTypes {
