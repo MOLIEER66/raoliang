@@ -66,14 +66,16 @@
 
 产出：`core.source.protocol` 包，标本驱动的容错解析。
 
-- [ ] 头注释解析 `@name/@description/@version/@author/@homepage`（P0-13：≤24/≤36 校验，超限截断不拒收）
-- [ ] inited 握手状态机：`status/sources` 解析、未知字段忽略（openDevTools 等桌面版语义，协议 §4）
-- [ ] sources 容错：qualitys 未知值能映射就映射、不能就隐藏不崩（协议 §4）；actions 声明驱动分发 + 双签名兜底（§8-1 分歧）
-- [ ] musicUrl/lyric/pic 出入参编解码；lyric 四字段 `lryic/tlryic` typo 容错（P1-11）
-- [ ] updateAlert 接收（≤1 次，P0-14）→ 事件流给 UI
-- [ ] musicInfo 透传通道：`Map<String, Any?>` 型 `sourceSpecific`（协议 §5.4"宁多勿少"）
-- [ ] 未声明 action 组合快速失败（协议 §5.5）
-- [ ] JVM 单测：标本脚本 `reference/HYWmusic_free_v1.0.0.js` 真实数据驱动的用例 ≥ 20 个
+- ✅ 头注释解析 `@name/@description/@version/@author/@homepage`（P0-13：≤24/≤36 校验，超限截断不拒收）
+- ✅ inited 握手状态机：`status/sources` 解析、未知字段忽略（openDevTools 等桌面版语义，协议 §4）
+- ✅ sources 容错：qualitys 未知值能映射就映射、不能就隐藏不崩（协议 §4）；actions 声明驱动分发 + 双签名兜底（§8-1 分歧）
+- ✅ musicUrl/lyric/pic 出入参编解码；lyric 四字段 `lryic/tlryic` typo 容错（P1-11）
+- ✅ updateAlert 接收（≤1 次，P0-14）→ 事件流给 UI
+- ✅ musicInfo 透传通道：`Map<String, Any?>` 型 `sourceSpecific`（协议 §5.4"宁多勿少"）
+- ✅ 未声明 action 组合快速失败（协议 §5.5）
+- ✅ JVM 单测：标本脚本 `reference/HYWmusic_free_v1.0.0.js` 真实数据驱动的用例 ≥ 20 个
+
+📌 实测结论（2026-09-28）：LxHeaderParser（标本头注释 8 用例：@name≤24/@description≤36 截断不拒收、混淆脚本无头注释返回 null）+ LxLyrics（10 用例：LRC 多时间标签拆行、lxlyric 逐字 words、typo 双认 lryic/tlryic、失败空对象不阻断播放）。其中 inited 状态机/sources 容错/updateAlert 已随 T2 LxWire 落地（17 用例），T4 补齐头注释与歌词两块后 :core:source 合计 48 用例全绿。
 
 ### T5 · SourceManager + 脚本仓库（1 天，依赖 T2/T3/T4）
 
