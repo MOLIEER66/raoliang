@@ -81,11 +81,13 @@
 
 产出：多源管理与降级（ADR-0002 §技术要点）。
 
-- [ ] 脚本导入管线：SAF 读 `.js` → 头注释解析 → 存内部存储（`filesDir/sources/`）+ DataStore 登记元数据
-- [ ] 多源列表：启用/禁用/排序/删除；"当前源"偏好持久化
-- [ ] 冗余降级（P0-16）：handler reject / 网络失败 / handler 超时（10-15s 可配置）/ isolate 崩溃 → 自动切下一启用源；reject 文案原样透出（"鉴权失败"/"请求过速"等可读错误）
-- [ ] 降级策略纯函数抽出（`resolveWithFallback(sources, action, info)`）JVM 单测：全挂/部分挂/首选挂/单源
-- [ ] 首次无源状态：库页空态幽灵按钮「导入洛雪音源脚本」接导入流（SCREENS §1 空态定义）
+- ✅ 脚本导入管线：SAF 读 `.js` → 头注释解析 → 存内部存储（`filesDir/sources/`）+ DataStore 登记元数据
+- ✅ 多源列表：启用/禁用/排序/删除；"当前源"偏好持久化
+- ✅ 冗余降级（P0-16）：handler reject / 网络失败 / handler 超时（10-15s 可配置）/ isolate 崩溃 → 自动切下一启用源；reject 文案原样透出（"鉴权失败"/"请求过速"等可读错误）
+- ✅ 降级策略纯函数抽出（`resolveWithFallback(sources, action, info)`）JVM 单测：全挂/部分挂/首选挂/单源
+- ✅ 首次无源状态：库页空态幽灵按钮「导入洛雪音源脚本」接导入流（SCREENS §1 空态定义）
+
+📌 实测结论（2026-09-28）：FallbackPolicy 降级纯函数（reject/超时/崩溃三族失败均切源，全挂聚合可读报告）+ SourceManager（导入→头注释→落盘→握手全链/启停/删除/能力面 StateFlow）+ LxScriptStore 接口（Fake 内存假体）。依赖方向守恒：runtimeFactory 由 app 装配层注入（js→source 不反转）。:core:source 累计 60 JVM 用例全绿。
 
 ### T6 · 播放接入（1 天，依赖 T5）
 
