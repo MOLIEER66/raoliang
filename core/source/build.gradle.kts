@@ -22,6 +22,11 @@ dependencies {
     // JSON 树 API（T2 LxWire 信道编解码；JsonElement 运行时用法，无需编译器插件）
     implementation(libs.kotlinx.serialization.json)
 
-    // JVM 单测（T2 起：标本脚本驱动的协议用例）
+    // OkHttp（T3 LxBridge：脚本网络代发；4.12.0 与 Coil 3.5.0 传递版本一致）
+    implementation(libs.okhttp.client)
+
+    // JVM 单测（T2 起：标本脚本驱动的协议用例；T3 起：MockWebServer 桥用例）
     testImplementation(libs.junit)
+    testImplementation(libs.okhttp.mockwebserver)
+    testImplementation(libs.kotlinx.coroutines.test)
 }

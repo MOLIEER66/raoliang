@@ -49,16 +49,18 @@
 
 ### T3 · request 网络桥 LxBridge（1 天，依赖 T2）
 
-产出：OkHttp 代发的宿主桥（P0-8/P0-9）。
+产出（实测见下）：OkHttp 代发的宿主桥（P0-8/P0-9）。
 
-- [ ] options 全量：method（默认 GET）/headers/body/form/formData/timeout（毫秒，官方唯一超时手段）
-- [ ] UA 默认注入 `lx-music-mobile/{协议版本}`，脚本显式 UA 优先（P0-9）
-- [ ] header 透传制 + 黑名单（Host/Cookie 等敏感头）
-- [ ] callback 恒 3 参 `(err, resp, body)` 且 `resp.body === body`（双签名裁决）
-- [ ] body JSON 语义：content-type 为 JSON → 对象，否则 string（needle 行为）
-- [ ] 取消函数返回（哪怕 no-op）；isolate 销毁联动取消
-- [ ] 域名审计：桥接 URL 全量记录（内存环形缓冲 + DataStore 落盘，供 §6 脚本详情页）
-- [ ] MockWebServer 单测：双签名/JSON 语义/UA 优先/黑名单/超时/取消
+- ✅ options 全量：method（默认 GET）/headers/body/form/formData/timeout（毫秒，官方唯一超时手段）
+- ✅ UA 默认注入 `lx-music-mobile/{协议版本}`，脚本显式 UA 优先（P0-9）
+- ✅ header 透传制 + 黑名单（Host/Cookie 等敏感头）
+- ✅ callback 恒 3 参 `(err, resp, body)` 且 `resp.body === body`（双签名裁决）
+- ✅ body JSON 语义：content-type 为 JSON → 对象，否则 string（needle 行为）
+- ✅ 取消函数返回（哪怕 no-op）；isolate 销毁联动取消
+- ✅ 域名审计：桥接 URL 全量记录（内存环形缓冲 + DataStore 落盘，供 §6 脚本详情页）
+- ✅ MockWebServer 单测：双签名/JSON 语义/UA 优先/黑名单/超时/取消
+
+📌 实测结论（2026-09-28）：MockWebServer 13 用例全绿。生态实锤一例：标本 `X-Card-Key: 公益版` 中文值被 OkHttp 校验器拒绝（Node≥12 同抛 ERR_INVALID_CHAR）——桥层容错为 UTF-8 百分号编码后发出（保请求不崩，后端严格比对则脚本 reject 可读透出）。OkHttp 4.12.0 与 Coil 3.5.0 传递版本仲裁一致。
 
 ### T4 · 协议层纯函数（1.5 天，依赖 T1，可与 T2/T3 并行）
 
